@@ -30,16 +30,22 @@ echo "  VNI:        $VXLAN_VNI"
 echo "  WAN iface:  $WAN_IFACE"
 echo "  HOST iface: $HOST_IFACE"
 
-#echo "🔍 Kollar om FRR är installerat..."
-#if ! command -v vtysh >/dev/null 2>&1; then
-#    echo "📦 FRR saknas — installerar..."
-#    sudo apt update
-#    sudo apt install -y frr frr-pythontools
-#else
-#    echo "✅ FRR redan installerat"
-#fi
+# Extract the first IPv4 address+CIDR from the WAN interface
+WAN_SUBNET=$(ip -4 addr show "${WAN_IFACE}" | awk '/inet / {print $2}' | head -n1)
 
-sudo apt install frr
+if [[ -z "$WAN_SUBNET" ]]; then
+  echo "❌ Ingen IPv4-adress hittades på $WAN_IFACE. Kontrollera att interfacet är upp och har en IP."
+  exit 1
+fi
+
+echo "🔍 Kollar om FRR är installerat..."
+if ! command -v vtysh >/dev/null 2>&1; then
+    echo "📦 FRR saknas — installerar..."
+    sudo apt update
+    sudo apt install -y frr frr-pythontools
+else
+    echo "✅ FRR redan installerat"
+fi
 
 echo "🧪 Säkerställer att bgpd och ospfd är aktiverade i /etc/frr/daemons"
 sudo sed -i 's/^bgpd=no/bgpd=yes/' /etc/frr/daemons
