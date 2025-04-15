@@ -30,14 +30,16 @@ echo "  VNI:        $VXLAN_VNI"
 echo "  WAN iface:  $WAN_IFACE"
 echo "  HOST iface: $HOST_IFACE"
 
-echo "🔍 Kollar om FRR är installerat..."
-if ! command -v vtysh >/dev/null 2>&1; then
-    echo "📦 FRR saknas — installerar..."
-    sudo apt update
-    sudo apt install -y frr frr-pythontools
-else
-    echo "✅ FRR redan installerat"
-fi
+#echo "🔍 Kollar om FRR är installerat..."
+#if ! command -v vtysh >/dev/null 2>&1; then
+#    echo "📦 FRR saknas — installerar..."
+#    sudo apt update
+#    sudo apt install -y frr frr-pythontools
+#else
+#    echo "✅ FRR redan installerat"
+#fi
+
+sudo apt install frr
 
 echo "🧪 Säkerställer att bgpd och ospfd är aktiverade i /etc/frr/daemons"
 sudo sed -i 's/^bgpd=no/bgpd=yes/' /etc/frr/daemons
