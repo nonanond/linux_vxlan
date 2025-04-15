@@ -43,6 +43,18 @@ echo "🧪 Säkerställer att bgpd och ospfd är aktiverade i /etc/frr/daemons"
 sudo sed -i 's/^bgpd=no/bgpd=yes/' /etc/frr/daemons
 sudo sed -i 's/^ospfd=no/ospfd=yes/' /etc/frr/daemons
 
+echo "🌐 Kollar om IP forwarding är aktiverat..."
+if [[ "$(sysctl -n net.ipv4.ip_forward)" -eq 0 ]]; then
+    echo "➡️  Aktiverar IP forwarding temporärt..."
+    sudo sysctl -w net.ipv4.ip_forward=1
+
+    echo "💾 Skriver till /etc/sysctl.conf för att göra det permanent..."
+    sudo sed -i '/^net.ipv4.ip_forward/d' /etc/sysctl.conf
+    echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf > /dev/null
+else
+    echo "✅ IP forwarding är redan aktiverat"
+fi
+
 # === SETUP ===
 echo "🔧 Sätter loopback IP..."
 ip addr add ${MY_LOOPBACK_IP}/32 dev lo 2>/dev/null || echo "⏩ Redan satt"
