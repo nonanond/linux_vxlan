@@ -1,3 +1,9 @@
+# Sniffa VXLAN-trafik
+sudo tcpdump -i enp7s0 udp port 4789
+
+# Sniffa BGP-trafik
+sudo tcpdump -i enp7s0 port 179 -nn -v
+
 # Verify OSPF is up
 sudo vtysh -c "show ip ospf neighbor"
 
