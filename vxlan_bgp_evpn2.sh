@@ -30,6 +30,9 @@ echo "  VNI:        $VXLAN_VNI"
 echo "  WAN iface:  $WAN_IFACE"
 echo "  HOST iface: $HOST_IFACE"
 
+sudo ip addr add ${MY_LOOPBACK_IP}/24 dev $WAN_IFACE
+sudo ip link set dev $WAN_IFACE up
+
 # Extract the first IPv4 address+CIDR from the WAN interface
 WAN_SUBNET=$(ip -4 addr show "${WAN_IFACE}" | awk '/inet / {print $2}' | head -n1)
 
